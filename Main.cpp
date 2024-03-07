@@ -21,9 +21,9 @@ struct RenderItem
 
 	XMFLOAT4X4 TexTransform = MathHelper::Identity4x4();
 
-	// Dirty ±êÖ¾±íÊ¾¶ÔÏóÊı¾İÒÑ¸ü¸Ä£¬ÎÒÃÇĞèÒª¸üĞÂ³£Á¿»º³åÇø¡£ÓÉÓÚÃ¿¸ö FrameResource ¶¼ÓĞÒ»¸ö
-    // ¶ÔÏó»º³åÇø£¬Òò´ËÎÒÃÇ±ØĞë½«¸üĞÂÓ¦ÓÃÓÚÃ¿¸ö FrameResource¡£ Òò´Ë£¬µ±ÎÒÃÇĞŞ¸Ä obect Êı¾İÊ±£¬
-    // ÎÒÃÇÓ¦¸ÃÉèÖÃ NumFramesDirty = gNumFrameResources£¬ÒÔ±ãÃ¿¸öÖ¡×ÊÔ´¶¼»ñµÃ¸üĞÂ¡£
+	// Dirty æ ‡å¿—è¡¨ç¤ºå¯¹è±¡æ•°æ®å·²æ›´æ”¹ï¼Œæˆ‘ä»¬éœ€è¦æ›´æ–°å¸¸é‡ç¼“å†²åŒºã€‚ç”±äºæ¯ä¸ª FrameResource éƒ½æœ‰ä¸€ä¸ª
+    // å¯¹è±¡ç¼“å†²åŒºï¼Œå› æ­¤æˆ‘ä»¬å¿…é¡»å°†æ›´æ–°åº”ç”¨äºæ¯ä¸ª FrameResourceã€‚ å› æ­¤ï¼Œå½“æˆ‘ä»¬ä¿®æ”¹ obect æ•°æ®æ—¶ï¼Œ
+    // æˆ‘ä»¬åº”è¯¥è®¾ç½® NumFramesDirty = gNumFrameResourcesï¼Œä»¥ä¾¿æ¯ä¸ªå¸§èµ„æºéƒ½è·å¾—æ›´æ–°ã€‚
 	int NumFramesDirty = gNumFrameResources;
 
 	UINT ObjCBIndex = -1;
@@ -137,9 +137,9 @@ private:
 
     float mLightRotationAngle = 0.0f;
     XMFLOAT3 mBaseLightDirections[3] = {
-        XMFLOAT3(0.57735f, -0.57735f, 0.57735f),// (1/¡Ì3, -1/¡Ì3, 1/¡Ì3)
+        XMFLOAT3(0.57735f, -0.57735f, 0.57735f),// (1/âˆš3, -1/âˆš3, 1/âˆš3)
         XMFLOAT3(-0.57735f, -0.57735f, 0.57735f),
-        XMFLOAT3(0.0f, -0.707f, -0.707f)    //  £¨1/¡Ì2£©
+        XMFLOAT3(0.0f, -0.707f, -0.707f)    //  ï¼ˆ1/âˆš2ï¼‰
     };
     XMFLOAT3 mRotatedLightDirections[3];
 
@@ -171,7 +171,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 ShadowMapApp::ShadowMapApp(HINSTANCE hInstance)
     : D3DApp(hInstance)
 {
-    //¿í¶ÈÎª20£¬Éî¶ÈÎª30.0f£¬ÒÔÊÀ½ç¿Õ¼äÔ­µãÎªÖĞĞÄ¡£
+    //å®½åº¦ä¸º20ï¼Œæ·±åº¦ä¸º30.0fï¼Œä»¥ä¸–ç•Œç©ºé—´åŸç‚¹ä¸ºä¸­å¿ƒã€‚
     mSceneBounds.Center = XMFLOAT3(0.0f, 0.0f, 0.0f);
     mSceneBounds.Radius = sqrtf(10.0f*10.0f + 15.0f*15.0f);
 }
@@ -187,7 +187,7 @@ bool ShadowMapApp::Initialize()
     if(!D3DApp::Initialize())
         return false;
 
-    // ÖØÖÃÃüÁîÁĞ±íÒÔ×¼±¸³õÊ¼»¯ÃüÁî
+    // é‡ç½®å‘½ä»¤åˆ—è¡¨ä»¥å‡†å¤‡åˆå§‹åŒ–å‘½ä»¤
     ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
 
 	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
@@ -206,12 +206,12 @@ bool ShadowMapApp::Initialize()
     BuildFrameResources();
     BuildPSOs();
 
-    // Ö´ĞĞ³õÊ¼»¯ÃüÁî
+    // æ‰§è¡Œåˆå§‹åŒ–å‘½ä»¤
     ThrowIfFailed(mCommandList->Close());
     ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
     mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-    //µÈµ½³õÊ¼»¯Íê³É
+    //ç­‰åˆ°åˆå§‹åŒ–å®Œæˆ
     FlushCommandQueue();
 
     return true;
@@ -258,7 +258,7 @@ void ShadowMapApp::Update(const GameTimer& gt)
         CloseHandle(eventHandle);
     }
 
-    //ÎªµÆ¹â£¨ÒÔ¼°ÒõÓ°£©ÖÆ×÷¶¯»­¡£
+    //ä¸ºç¯å…‰ï¼ˆä»¥åŠé˜´å½±ï¼‰åˆ¶ä½œåŠ¨ç”»ã€‚
 
     mLightRotationAngle += 0.1f*gt.DeltaTime();
 
@@ -282,7 +282,7 @@ void ShadowMapApp::Draw(const GameTimer& gt)
 {
     auto cmdListAlloc = mCurrFrameResource->CmdListAlloc;
 
-    // Ö»ÓĞµ±¹ØÁªµÄÃüÁîÁĞ±íÔÚ GPU ÉÏÍê³ÉÖ´ĞĞÊ±£¬ÎÒÃÇ²ÅÄÜÖØÖÃ¡£
+    // åªæœ‰å½“å…³è”çš„å‘½ä»¤åˆ—è¡¨åœ¨ GPU ä¸Šå®Œæˆæ‰§è¡Œæ—¶ï¼Œæˆ‘ä»¬æ‰èƒ½é‡ç½®ã€‚
     ThrowIfFailed(cmdListAlloc->Reset());
 
     ThrowIfFailed(mCommandList->Reset(cmdListAlloc.Get(), mPSOs["opaque"].Get()));
@@ -292,14 +292,14 @@ void ShadowMapApp::Draw(const GameTimer& gt)
 
     mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
-    // °ó¶¨´Ë³¡¾°ÖĞÊ¹ÓÃµÄËùÓĞ²ÄÖÊ¡£ ¶ÔÓÚ½á¹¹»¯»º³åÇø£¬ÎÒÃÇ¿ÉÒÔÈÆ¹ı¶Ñ²¢ÉèÖÃÎª¸ùÃèÊö·û¡£
+    // ç»‘å®šæ­¤åœºæ™¯ä¸­ä½¿ç”¨çš„æ‰€æœ‰æè´¨ã€‚ å¯¹äºç»“æ„åŒ–ç¼“å†²åŒºï¼Œæˆ‘ä»¬å¯ä»¥ç»•è¿‡å †å¹¶è®¾ç½®ä¸ºæ ¹æè¿°ç¬¦ã€‚
     auto matBuffer = mCurrFrameResource->MaterialBuffer->Resource();
     mCommandList->SetGraphicsRootShaderResourceView(2, matBuffer->GetGPUVirtualAddress());
 
     mCommandList->SetGraphicsRootDescriptorTable(3, mNullSrv);	 
 
-    // °ó¶¨´Ë³¡¾°ÖĞÊ¹ÓÃµÄËùÓĞÎÆÀí¡£ Çë×¢Òâ£¬ÎÒÃÇÖ»ĞèÒªÖ¸¶¨±íÖĞµÄµÚÒ»¸öÃèÊö·û¡£  
-    // ¸ùÇ©ÃûÖªµÀ±íÖĞĞèÒª¶àÉÙ¸öÃèÊö·û¡£
+    // ç»‘å®šæ­¤åœºæ™¯ä¸­ä½¿ç”¨çš„æ‰€æœ‰çº¹ç†ã€‚ è¯·æ³¨æ„ï¼Œæˆ‘ä»¬åªéœ€è¦æŒ‡å®šè¡¨ä¸­çš„ç¬¬ä¸€ä¸ªæè¿°ç¬¦ã€‚  
+    // æ ¹ç­¾åçŸ¥é“è¡¨ä¸­éœ€è¦å¤šå°‘ä¸ªæè¿°ç¬¦ã€‚
     mCommandList->SetGraphicsRootDescriptorTable(4, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
     DrawSceneToShadowMap();
@@ -307,23 +307,23 @@ void ShadowMapApp::Draw(const GameTimer& gt)
     mCommandList->RSSetViewports(1, &mScreenViewport);
     mCommandList->RSSetScissorRects(1, &mScissorRect);
 
-    // Ö¸Ê¾×ÊÔ´Ê¹ÓÃÇé¿öµÄ×´Ì¬×ª»»
+    // æŒ‡ç¤ºèµ„æºä½¿ç”¨æƒ…å†µçš„çŠ¶æ€è½¬æ¢
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
-    // Çå³ıºóÌ¨»º³åÇøºÍÉî¶È»º³åÇø¡£
+    // æ¸…é™¤åå°ç¼“å†²åŒºå’Œæ·±åº¦ç¼“å†²åŒºã€‚
     mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
     mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-    // Ö¸¶¨ÎÒÃÇÒªäÖÈ¾µ½µÄ»º³åÇø
+    // æŒ‡å®šæˆ‘ä»¬è¦æ¸²æŸ“åˆ°çš„ç¼“å†²åŒº
     mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
 
 	auto passCB = mCurrFrameResource->PassCB->Resource();
 	mCommandList->SetGraphicsRootConstantBufferView(1, passCB->GetGPUVirtualAddress());
 
-    // °ó¶¨Ìì¿ÕÁ¢·½ÌåÌùÍ¼¡£ ¶ÔÓÚÎÒÃÇµÄÑİÊ¾£¬ÎÒÃÇÖ»Ê¹ÓÃÒ»¸ö¡°ÊÀ½ç¡±Á¢·½ÌåÌùÍ¼À´±íÊ¾Ô¶´¦µÄ»·¾³£¬
-    // Òò´ËËùÓĞ¶ÔÏó¶¼½«Ê¹ÓÃÏàÍ¬µÄÁ¢·½ÌåÌùÍ¼£¬ÎÒÃÇÖ»ĞèÒªÃ¿Ö¡ÉèÖÃÒ»´Î¡£ 
-    //Èç¹ûÎÒÃÇÏëÊ¹ÓÃ¡°±¾µØ¡±Á¢·½ÌåÓ³Éä£¬ÎÒÃÇ±ØĞë°´¶ÔÏó¸ü¸ÄËüÃÇ£¬»òÕß¶¯Ì¬Ë÷Òıµ½Á¢·½ÌåÓ³ÉäÊı×éÖĞ¡£
+    // ç»‘å®šå¤©ç©ºç«‹æ–¹ä½“è´´å›¾ã€‚ å¯¹äºæˆ‘ä»¬çš„æ¼”ç¤ºï¼Œæˆ‘ä»¬åªä½¿ç”¨ä¸€ä¸ªâ€œä¸–ç•Œâ€ç«‹æ–¹ä½“è´´å›¾æ¥è¡¨ç¤ºè¿œå¤„çš„ç¯å¢ƒï¼Œ
+    // å› æ­¤æ‰€æœ‰å¯¹è±¡éƒ½å°†ä½¿ç”¨ç›¸åŒçš„ç«‹æ–¹ä½“è´´å›¾ï¼Œæˆ‘ä»¬åªéœ€è¦æ¯å¸§è®¾ç½®ä¸€æ¬¡ã€‚ 
+    //å¦‚æœæˆ‘ä»¬æƒ³ä½¿ç”¨â€œæœ¬åœ°â€ç«‹æ–¹ä½“æ˜ å°„ï¼Œæˆ‘ä»¬å¿…é¡»æŒ‰å¯¹è±¡æ›´æ”¹å®ƒä»¬ï¼Œæˆ–è€…åŠ¨æ€ç´¢å¼•åˆ°ç«‹æ–¹ä½“æ˜ å°„æ•°ç»„ä¸­ã€‚
 
     CD3DX12_GPU_DESCRIPTOR_HANDLE skyTexDescriptor(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
     skyTexDescriptor.Offset(mSkyTexHeapIndex, mCbvSrvUavDescriptorSize);
@@ -338,25 +338,25 @@ void ShadowMapApp::Draw(const GameTimer& gt)
 	mCommandList->SetPipelineState(mPSOs["sky"].Get());
 	DrawRenderItems(mCommandList.Get(), mRitemLayer[(int)RenderLayer::Sky]);
 
-    // Ö¸Ê¾×ÊÔ´Ê¹ÓÃÇé¿öµÄ×´Ì¬×ª»»
+    // æŒ‡ç¤ºèµ„æºä½¿ç”¨æƒ…å†µçš„çŠ¶æ€è½¬æ¢
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
-    // Íê³ÉÂ¼ÖÆÃüÁî
+    // å®Œæˆå½•åˆ¶å‘½ä»¤
     ThrowIfFailed(mCommandList->Close());
 
-    // ½«ÃüÁîÁĞ±íÌí¼Óµ½¶ÓÁĞÖĞµÈ´ıÖ´ĞĞ
+    // å°†å‘½ä»¤åˆ—è¡¨æ·»åŠ åˆ°é˜Ÿåˆ—ä¸­ç­‰å¾…æ‰§è¡Œ
     ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
     mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-    // Ë«»º³å½»»»
+    // åŒç¼“å†²äº¤æ¢
     ThrowIfFailed(mSwapChain->Present(0, 0));
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
 
     mCurrFrameResource->Fence = ++mCurrentFence;
 
-    // ÏòÃüÁî¶ÓÁĞÌí¼ÓÒ»ÌõÖ¸ÁîÒÔÉèÖÃĞÂµÄÎ§À¸µã¡£ÓÉÓÚÎÒÃÇÎ»ÓÚ GPU Ê±¼äÖáÉÏ£¬Òò´ËÔÚ GPU Íê³É´¦Àí
-    // ´Ë Signal£¨£© Ö®Ç°µÄËùÓĞÃüÁîÖ®Ç°£¬²»»áÉèÖÃĞÂµÄÎ§À¸µã¡£
+    // å‘å‘½ä»¤é˜Ÿåˆ—æ·»åŠ ä¸€æ¡æŒ‡ä»¤ä»¥è®¾ç½®æ–°çš„å›´æ ç‚¹ã€‚ç”±äºæˆ‘ä»¬ä½äº GPU æ—¶é—´è½´ä¸Šï¼Œå› æ­¤åœ¨ GPU å®Œæˆå¤„ç†
+    // æ­¤ Signalï¼ˆï¼‰ ä¹‹å‰çš„æ‰€æœ‰å‘½ä»¤ä¹‹å‰ï¼Œä¸ä¼šè®¾ç½®æ–°çš„å›´æ ç‚¹ã€‚
     mCommandQueue->Signal(mFence.Get(), mCurrentFence);
 }
 
@@ -469,11 +469,11 @@ void ShadowMapApp::UpdateShadowTransform(const GameTimer& gt)
 
     XMStoreFloat3(&mLightPosW, lightPos);
 
-    // ½«±ß½çÇòÌå×ª»»Îª¹â¿Õ¼ä
+    // å°†è¾¹ç•Œçƒä½“è½¬æ¢ä¸ºå…‰ç©ºé—´
     XMFLOAT3 sphereCenterLS;
     XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, lightView));
 
-    // ¹â¿Õ¼äÖĞµÄÕıÊÓ×¶Ìå°üÎ§ÁË³¡¾°
+    // å…‰ç©ºé—´ä¸­çš„æ­£è§†é”¥ä½“åŒ…å›´äº†åœºæ™¯
     float l = sphereCenterLS.x - mSceneBounds.Radius;
     float b = sphereCenterLS.y - mSceneBounds.Radius;
     float n = sphereCenterLS.z - mSceneBounds.Radius;
@@ -485,7 +485,7 @@ void ShadowMapApp::UpdateShadowTransform(const GameTimer& gt)
     mLightFarZ = f;
     XMMATRIX lightProj = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
 
-    // ½« NDC ¿Õ¼ä [-1£¬+1]^2 ×ª»»ÎªÎÆÀí¿Õ¼ä [0,1]^2
+    // å°† NDC ç©ºé—´ [-1ï¼Œ+1]^2 è½¬æ¢ä¸ºçº¹ç†ç©ºé—´ [0,1]^2
     XMMATRIX T(
         0.5f, 0.0f, 0.0f, 0.0f,
         0.0f, -0.5f, 0.0f, 0.0f,
@@ -610,10 +610,10 @@ void ShadowMapApp::BuildRootSignature()
 	CD3DX12_DESCRIPTOR_RANGE texTable1;
 	texTable1.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 10, 2, 0);
 
-    // ¸ù²ÎÊı¿ÉÒÔÊÇ±í¡¢¸ùÃèÊö·û»ò¸ù³£Á¿
+    // æ ¹å‚æ•°å¯ä»¥æ˜¯è¡¨ã€æ ¹æè¿°ç¬¦æˆ–æ ¹å¸¸é‡
     CD3DX12_ROOT_PARAMETER slotRootParameter[5];
 
-	// ĞÔÄÜÌáÊ¾£º´Ó×îÆµ·±µ½×î²»Æµ·±µÄË³Ğò
+	// æ€§èƒ½æç¤ºï¼šä»æœ€é¢‘ç¹åˆ°æœ€ä¸é¢‘ç¹çš„é¡ºåº
     slotRootParameter[0].InitAsConstantBufferView(0);
     slotRootParameter[1].InitAsConstantBufferView(1);
     slotRootParameter[2].InitAsShaderResourceView(0, 1);
@@ -623,12 +623,12 @@ void ShadowMapApp::BuildRootSignature()
 
 	auto staticSamplers = GetStaticSamplers();
 
-    //¸ùÇ©ÃûÊÇ¸ù²ÎÊıµÄÊı×é¡£
+    //æ ¹ç­¾åæ˜¯æ ¹å‚æ•°çš„æ•°ç»„ã€‚
 	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(5, slotRootParameter,
 		(UINT)staticSamplers.size(), staticSamplers.data(),
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
-    // ´´½¨¾ßÓĞµ¥¸ö²å²ÛµÄ¸ùÇ©Ãû£¬¸Ã²å²ÛÖ¸ÏòÓÉµ¥¸ö³£Á¿»º³åÇø×é³ÉµÄÃèÊö·û·¶Î§
+    // åˆ›å»ºå…·æœ‰å•ä¸ªæ’æ§½çš„æ ¹ç­¾åï¼Œè¯¥æ’æ§½æŒ‡å‘ç”±å•ä¸ªå¸¸é‡ç¼“å†²åŒºç»„æˆçš„æè¿°ç¬¦èŒƒå›´
     ComPtr<ID3DBlob> serializedRootSig = nullptr;
     ComPtr<ID3DBlob> errorBlob = nullptr;
     HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,
@@ -761,16 +761,16 @@ void ShadowMapApp::BuildShapeGeometry()
 	GeometryGenerator::MeshData cylinder = geoGen.CreateCylinder(0.5f, 0.3f, 3.0f, 20, 20);
     GeometryGenerator::MeshData quad = geoGen.CreateQuad(0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-	// ÎÒÃÇ½«ËùÓĞ¼¸ºÎÌåÁ¬½Óµ½Ò»¸ö´óµÄ¶¥µã/Ë÷Òı»º³åÇøÖĞ¡£ Òò´Ë£¬¶¨ÒåÃ¿¸ö×ÓÍø¸ñ¸²¸ÇµÄ»º³åÇøÖĞµÄÇøÓò¡£
+	// æˆ‘ä»¬å°†æ‰€æœ‰å‡ ä½•ä½“è¿æ¥åˆ°ä¸€ä¸ªå¤§çš„é¡¶ç‚¹/ç´¢å¼•ç¼“å†²åŒºä¸­ã€‚ å› æ­¤ï¼Œå®šä¹‰æ¯ä¸ªå­ç½‘æ ¼è¦†ç›–çš„ç¼“å†²åŒºä¸­çš„åŒºåŸŸã€‚
 
-	// ½«¶¥µãÆ«ÒÆ»º´æµ½´®Áª¶¥µã»º³åÇøÖĞµÄÃ¿¸ö¶ÔÏó¡£
+	// å°†é¡¶ç‚¹åç§»ç¼“å­˜åˆ°ä¸²è”é¡¶ç‚¹ç¼“å†²åŒºä¸­çš„æ¯ä¸ªå¯¹è±¡ã€‚
 	UINT boxVertexOffset = 0;
 	UINT gridVertexOffset = (UINT)box.Vertices.size();
 	UINT sphereVertexOffset = gridVertexOffset + (UINT)grid.Vertices.size();
 	UINT cylinderVertexOffset = sphereVertexOffset + (UINT)sphere.Vertices.size();
     UINT quadVertexOffset = cylinderVertexOffset + (UINT)cylinder.Vertices.size();
 
-	// ÔÚ¼¶ÁªË÷Òı»º³åÇøÖĞ»º´æÃ¿¸ö¶ÔÏóµÄÆğÊ¼Ë÷Òı¡£
+	// åœ¨çº§è”ç´¢å¼•ç¼“å†²åŒºä¸­ç¼“å­˜æ¯ä¸ªå¯¹è±¡çš„èµ·å§‹ç´¢å¼•ã€‚
 	UINT boxIndexOffset = 0;
 	UINT gridIndexOffset = (UINT)box.Indices32.size();
 	UINT sphereIndexOffset = gridIndexOffset + (UINT)grid.Indices32.size();
@@ -802,7 +802,7 @@ void ShadowMapApp::BuildShapeGeometry()
     quadSubmesh.StartIndexLocation = quadIndexOffset;
     quadSubmesh.BaseVertexLocation = quadVertexOffset;
 
-    //ÌáÈ¡ÎÒÃÇ¸ĞĞËÈ¤µÄ¶¥µãÔªËØ£¬²¢½«ËùÓĞÍø¸ñµÄ¶¥µã´ò°üµ½Ò»¸ö¶¥µã»º³åÇøÖĞ¡£
+    //æå–æˆ‘ä»¬æ„Ÿå…´è¶£çš„é¡¶ç‚¹å…ƒç´ ï¼Œå¹¶å°†æ‰€æœ‰ç½‘æ ¼çš„é¡¶ç‚¹æ‰“åŒ…åˆ°ä¸€ä¸ªé¡¶ç‚¹ç¼“å†²åŒºä¸­ã€‚
 
 	auto totalVertexCount =
 		box.Vertices.size() +
@@ -929,8 +929,8 @@ void ShadowMapApp::BuildSkullGeometry()
 
         XMVECTOR N = XMLoadFloat3(&vertices[i].Normal);
 
-        // Éú³ÉÒ»¸öÇĞÏòÁ¿£¬ÒÔ±ã·¨ÏßÓ³ÉäÕı³£¹¤×÷¡£ ÎÒÃÇÃ»ÓĞ½«ÎÆÀíÌùÍ¼Ó¦ÓÃÓÚÍ·¹Ç£¬Òò´ËÎÒÃÇÖ»ĞèÒª
-        // ÈÎºÎÇĞÏòÁ¿£¬ÒÔ±ãÊıÑ§¼ÆËãµÃ³öÔ­Ê¼²åÖµ¶¥µã·¨Ïß¡£
+        // ç”Ÿæˆä¸€ä¸ªåˆ‡å‘é‡ï¼Œä»¥ä¾¿æ³•çº¿æ˜ å°„æ­£å¸¸å·¥ä½œã€‚ æˆ‘ä»¬æ²¡æœ‰å°†çº¹ç†è´´å›¾åº”ç”¨äºå¤´éª¨ï¼Œå› æ­¤æˆ‘ä»¬åªéœ€è¦
+        // ä»»ä½•åˆ‡å‘é‡ï¼Œä»¥ä¾¿æ•°å­¦è®¡ç®—å¾—å‡ºåŸå§‹æ’å€¼é¡¶ç‚¹æ³•çº¿ã€‚
         XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
         if(fabsf(XMVectorGetX(XMVector3Dot(N, up))) < 1.0f - 0.001f)
         {
@@ -1045,7 +1045,7 @@ void ShadowMapApp::BuildPSOs()
         mShaders["shadowOpaquePS"]->GetBufferSize()
     };
     
-    // ÒõÓ°ÌùÍ¼Í¨µÀÃ»ÓĞäÖÈ¾Ä¿±ê
+    // é˜´å½±è´´å›¾é€šé“æ²¡æœ‰æ¸²æŸ“ç›®æ ‡
     smapPsoDesc.RTVFormats[0] = DXGI_FORMAT_UNKNOWN;
     smapPsoDesc.NumRenderTargets = 0;
     ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&smapPsoDesc, IID_PPV_ARGS(&mPSOs["shadow_opaque"])));
@@ -1067,11 +1067,11 @@ void ShadowMapApp::BuildPSOs()
 	// PSO for sky.
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC skyPsoDesc = opaquePsoDesc;
 
-	// Ïà»úÔÚÌì¿ÕÇòÄÚ£¬¹Ø±ÕÌŞ³ı
+	// ç›¸æœºåœ¨å¤©ç©ºçƒå†…ï¼Œå…³é—­å‰”é™¤
 	skyPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 
-	// È·±£Éî¶Èº¯ÊıÊÇLESS_EQUALµÄ£¬¶ø²»½ö½öÊÇ LESS¡£ 
-    //·ñÔò£¬Èç¹ûÉî¶È»º³åÇø±»Çå³ıÎª 1£¬Ôò z = 1 £¨NDC£© ´¦µÄ¹éÒ»»¯Éî¶ÈÖµ½«ÎŞ·¨Í¨¹ıÉî¶È²âÊÔ¡£
+	// ç¡®ä¿æ·±åº¦å‡½æ•°æ˜¯LESS_EQUALçš„ï¼Œè€Œä¸ä»…ä»…æ˜¯ LESSã€‚ 
+    //å¦åˆ™ï¼Œå¦‚æœæ·±åº¦ç¼“å†²åŒºè¢«æ¸…é™¤ä¸º 1ï¼Œåˆ™ z = 1 ï¼ˆNDCï¼‰ å¤„çš„å½’ä¸€åŒ–æ·±åº¦å€¼å°†æ— æ³•é€šè¿‡æ·±åº¦æµ‹è¯•ã€‚
 	skyPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	skyPsoDesc.pRootSignature = mRootSignature.Get();
 	skyPsoDesc.VS =
@@ -1322,15 +1322,15 @@ void ShadowMapApp::DrawSceneToShadowMap()
 
     UINT passCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(PassConstants));
 
-    //Çå³ıºóÌ¨»º³åÇøºÍÉî¶È»º³åÇø¡£
+    //æ¸…é™¤åå°ç¼“å†²åŒºå’Œæ·±åº¦ç¼“å†²åŒºã€‚
     mCommandList->ClearDepthStencilView(mShadowMap->Dsv(), 
         D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-    //ÉèÖÃ null äÖÈ¾Ä¿±ê£¬ÒòÎªÎÒÃÇÖ»»á»æÖÆµ½Éî¶È»º³åÇø¡£ ÉèÖÃ null ³ÊÏÖÄ¿±ê½«½ûÓÃÑÕÉ«Ğ´Èë¡£
-    // Çë×¢Òâ£¬»î¶¯ PSO »¹±ØĞë½«³ÊÏÖÄ¿±ê¼ÆÊıÖ¸¶¨Îª 0¡£
+    //è®¾ç½® null æ¸²æŸ“ç›®æ ‡ï¼Œå› ä¸ºæˆ‘ä»¬åªä¼šç»˜åˆ¶åˆ°æ·±åº¦ç¼“å†²åŒºã€‚ è®¾ç½® null å‘ˆç°ç›®æ ‡å°†ç¦ç”¨é¢œè‰²å†™å…¥ã€‚
+    // è¯·æ³¨æ„ï¼Œæ´»åŠ¨ PSO è¿˜å¿…é¡»å°†å‘ˆç°ç›®æ ‡è®¡æ•°æŒ‡å®šä¸º 0ã€‚
     mCommandList->OMSetRenderTargets(0, nullptr, false, &mShadowMap->Dsv());
 
-    // °ó¶¨ÒõÓ°ÌùÍ¼´«µİµÄ´«µİ³£Á¿»º³åÇø¡£
+    // ç»‘å®šé˜´å½±è´´å›¾ä¼ é€’çš„ä¼ é€’å¸¸é‡ç¼“å†²åŒºã€‚
     auto passCB = mCurrFrameResource->PassCB->Resource();
     D3D12_GPU_VIRTUAL_ADDRESS passCBAddress = passCB->GetGPUVirtualAddress() + 1*passCBByteSize;
     mCommandList->SetGraphicsRootConstantBufferView(1, passCBAddress);
@@ -1339,18 +1339,18 @@ void ShadowMapApp::DrawSceneToShadowMap()
 
     DrawRenderItems(mCommandList.Get(), mRitemLayer[(int)RenderLayer::Opaque]);
 
-    // ¸Ä»Ø GENERIC_READ ÒÔ±ãÎÒÃÇ¿ÉÒÔ¶ÁÈ¡×ÅÉ«Æ÷ÖĞµÄÎÆÀí¡£
+    // æ”¹å› GENERIC_READ ä»¥ä¾¿æˆ‘ä»¬å¯ä»¥è¯»å–ç€è‰²å™¨ä¸­çš„çº¹ç†ã€‚
     mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mShadowMap->Resource(),
         D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ));
 }
 
 std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> ShadowMapApp::GetStaticSamplers()
 {
-    //Ó¦ÓÃ³ÌĞòÍ¨³£Ö»ĞèÒªÉÙÁ¿²ÉÑùÆ÷¡£ Òò´Ë£¬Ö»ĞèÔ¤ÏÈ¶¨ÒåËüÃÇ£¬²¢½«ËüÃÇ×÷Îª¸ùÇ©ÃûµÄÒ»²¿·Ö±£ÁôÏÂÀ´¡£
+    //åº”ç”¨ç¨‹åºé€šå¸¸åªéœ€è¦å°‘é‡é‡‡æ ·å™¨ã€‚ å› æ­¤ï¼Œåªéœ€é¢„å…ˆå®šä¹‰å®ƒä»¬ï¼Œå¹¶å°†å®ƒä»¬ä½œä¸ºæ ¹ç­¾åçš„ä¸€éƒ¨åˆ†ä¿ç•™ä¸‹æ¥ã€‚
 
 	const CD3DX12_STATIC_SAMPLER_DESC pointWrap(
-		0, // shader¼Ä´æÆ÷
-		D3D12_FILTER_MIN_MAG_MIP_POINT, // ÂË²¨Æ÷
+		0, // shaderå¯„å­˜å™¨
+		D3D12_FILTER_MIN_MAG_MIP_POINT, // æ»¤æ³¢å™¨
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP,  // addressU
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP,  // addressV
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP); // addressW
