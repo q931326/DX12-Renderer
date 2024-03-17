@@ -52,12 +52,12 @@ void ShadowMap::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE hCpuSrv,
 	                             CD3DX12_GPU_DESCRIPTOR_HANDLE hGpuSrv,
 	                             CD3DX12_CPU_DESCRIPTOR_HANDLE hCpuDsv)
 {
-	// ±£´æ¶ÔÃèÊö·ûµÄÒıÓÃ
+	// ä¿å­˜å¯¹æè¿°ç¬¦çš„å¼•ç”¨
 	mhCpuSrv = hCpuSrv;
 	mhGpuSrv = hGpuSrv;
     mhCpuDsv = hCpuDsv;
 
-	//  ´´½¨ÃèÊö·û
+	//  åˆ›å»ºæè¿°ç¬¦
 	BuildDescriptors();
 }
 
@@ -70,14 +70,14 @@ void ShadowMap::OnResize(UINT newWidth, UINT newHeight)
 
 		BuildResource();
 
-		// ĞÂ×ÊÔ´£¬Òò´ËÎÒÃÇĞèÒª¸Ã×ÊÔ´µÄĞÂÃèÊö·û
+		// æ–°èµ„æºï¼Œå› æ­¤æˆ‘ä»¬éœ€è¦è¯¥èµ„æºçš„æ–°æè¿°ç¬¦
 		BuildDescriptors();
 	}
 }
  
 void ShadowMap::BuildDescriptors()
 {
-    // ½« SRV ´´½¨µ½×ÊÔ´£¬ÒÔ±ãÎÒÃÇ¿ÉÒÔÔÚ×ÅÉ«Æ÷³ÌĞòÖĞ¶ÔÒõÓ°ÌùÍ¼½øĞĞ²ÉÑù
+    // å°† SRV åˆ›å»ºåˆ°èµ„æºï¼Œä»¥ä¾¿æˆ‘ä»¬å¯ä»¥åœ¨ç€è‰²å™¨ç¨‹åºä¸­å¯¹é˜´å½±è´´å›¾è¿›è¡Œé‡‡æ ·
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS; 
@@ -88,7 +88,7 @@ void ShadowMap::BuildDescriptors()
     srvDesc.Texture2D.PlaneSlice = 0;
     md3dDevice->CreateShaderResourceView(mShadowMap.Get(), &srvDesc, mhCpuSrv);
 
-	// ´´½¨ DSV µ½×ÊÔ´£¬ÒÔ±ãÎÒÃÇ¿ÉÒÔäÖÈ¾µ½ÒõÓ°ÌùÍ¼
+	// åˆ›å»º DSV åˆ°èµ„æºï¼Œä»¥ä¾¿æˆ‘ä»¬å¯ä»¥æ¸²æŸ“åˆ°é˜´å½±è´´å›¾
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc; 
     dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
     dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
@@ -126,3 +126,41 @@ void ShadowMap::BuildResource()
 		&optClear,
 		IID_PPV_ARGS(&mShadowMap)));
 }
+/*
+// ä¸ºé˜´å½±å›¾æ„å»ºPCF,è¿”å›é˜´å½±å› å­
+float CalcShadowFactor(float4 shadowPosH)
+{
+	// å°†é¡¶ç‚¹å˜æ¢åˆ°NDCç©ºé—´ï¼ˆå¦‚æœæ˜¯æ­£äº¤æŠ•å½±ï¼Œåˆ™W=1ï¼‰
+	shadowPosH.xyz /= shadowPosH.w;
+
+	// NDCç©ºé—´ä¸­çš„æ·±åº¦å€¼
+	float depth = shadowPosH.z;
+
+	// è¯»å–ShadowMapçš„å®½é«˜åŠmipçº§æ•°
+	uint width, height, numMips;
+	gShadowMap.GetDimensions(0, width, height, numMips);
+
+	// çº¹ç´ å°ºå¯¸
+	float dx = 1.0f / (float)width;
+
+	float percentLit = 0.0f;
+	// ä½¿ç”¨9æ ¸
+	const float2 offsets[9] =
+	{
+		float2(-dx, -dx), float2(0.0f, -dx), float2(dx, -dx),
+		float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
+		float2(-dx, +dx), float2(0.0f, +dx), float2(dx, +dx)
+	};
+
+	// PCFï¼ˆç±»ä¼¼å‡å€¼æ¨¡ç³Šç®—æ³•ï¼‰
+	[unroll]
+		// æ‰§è¡Œ9æ¬¡4-tap PCF
+		for (int i = 0; i < 9; ++i)
+		{
+			// æ¯ä¸ªæ ¸éƒ½æ‰§è¡Œtap4 PCFè®¡ç®—
+			percentLit += gShadowMap.SampleCmpLevelZero(gsamShadow,
+				shadowPosH.xy + offsets[i], depth).r;
+		}
+	// å°†9æ¬¡PCFå–å‡å€¼
+	return percentLit / 9.0f;
+	*/
