@@ -27,7 +27,7 @@ public:
 		CD3DX12_CPU_DESCRIPTOR_HANDLE hCpuDsv);
 
 	void OnResize(UINT newWidth, UINT newHeight);
-
+	//float CalcShadowFactor(float4 shadowPosH);
 private:
 	void BuildDescriptors();
 	void BuildResource();
