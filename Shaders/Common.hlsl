@@ -1,4 +1,3 @@
-// Defaults for number of lights.
 #ifndef NUM_DIR_LIGHTS
     #define NUM_DIR_LIGHTS 3
 #endif
@@ -11,7 +10,6 @@
     #define NUM_SPOT_LIGHTS 0
 #endif
 
-// Include structures and functions for lighting.
 #include "LightingUtil.hlsl"
 
 struct MaterialData
@@ -29,12 +27,10 @@ struct MaterialData
 TextureCube gCubeMap : register(t0);
 Texture2D gShadowMap : register(t1);
 
-// An array of textures, which is only supported in shader model 5.1+.  Unlike Texture2DArray, the textures
-// in this array can be different sizes and formats, making it more flexible than texture arrays.
+//纹理数组。 与 Texture2DArray 不同，纹理在此数组中可以有不同的大小和格式，使其比纹理数组更灵活。
 Texture2D gTextureMaps[10] : register(t2);
 
-// Put in space1, so the texture array does not overlap with these resources.  
-// The texture array will occupy registers t0, t1, ..., t3 in space0. 
+//放入 space1，这样纹理数组就不会与这些资源重叠。  纹理数组将占用空间 0 中的寄存器 t0、t1、...、t3。
 StructuredBuffer<MaterialData> gMaterialData : register(t0, space1);
 
 
@@ -46,7 +42,7 @@ SamplerState gsamAnisotropicWrap  : register(s4);
 SamplerState gsamAnisotropicClamp : register(s5);
 SamplerComparisonState gsamShadow : register(s6);
 
-// Constant data that varies per frame.
+// 每帧变化的恒定数据。
 cbuffer cbPerObject : register(b0)
 {
     float4x4 gWorld;
@@ -83,9 +79,7 @@ cbuffer cbPass : register(b1)
     Light gLights[MaxLights];
 };
 
-//---------------------------------------------------------------------------------------
 // Transforms a normal map sample to world space.
-//---------------------------------------------------------------------------------------
 float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, float3 tangentW)
 {
 	// Uncompress each component from [0,1] to [-1,1].
@@ -104,13 +98,9 @@ float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, floa
 	return bumpedNormalW;
 }
 
-//---------------------------------------------------------------------------------------
-// PCF for shadow mapping.
-//---------------------------------------------------------------------------------------
-
+//PCF
 float CalcShadowFactor(float4 shadowPosH)
 {
-    // Complete projection by doing division by w.
     shadowPosH.xyz /= shadowPosH.w;
 
     // Depth in NDC space.
