@@ -1,5 +1,3 @@
-// Contains API for shader lighting.
-
 #define MaxLights 16
 
 struct Light
@@ -25,8 +23,8 @@ float CalcAttenuation(float d, float falloffStart, float falloffEnd)
     return saturate((falloffEnd-d) / (falloffEnd - falloffStart));
 }
 
-// Schlick gives an approximation to Fresnel reflectance (see pg. 233 "Real-Time Rendering 3rd Ed.").
-// R0 = ( (n-1)/(n+1) )^2, where n is the index of refraction.
+// Schlick gives an approximation to Fresnel reflectance
+
 float3 SchlickFresnel(float3 R0, float3 normal, float3 lightVec)
 {
     float cosIncidentAngle = saturate(dot(normal, lightVec));
@@ -54,9 +52,8 @@ float3 BlinnPhong(float3 lightStrength, float3 lightVec, float3 normal, float3 t
     return (mat.DiffuseAlbedo.rgb + specAlbedo) * lightStrength;
 }
 
-//---------------------------------------------------------------------------------------
-// Evaluates the lighting equation for directional lights.
-//---------------------------------------------------------------------------------------
+// 评估定向光源的照明方程。
+
 float3 ComputeDirectionalLight(Light L, Material mat, float3 normal, float3 toEye)
 {
     // The light vector aims opposite the direction the light rays travel.
@@ -69,9 +66,8 @@ float3 ComputeDirectionalLight(Light L, Material mat, float3 normal, float3 toEy
     return BlinnPhong(lightStrength, lightVec, normal, toEye, mat);
 }
 
-//---------------------------------------------------------------------------------------
-// Evaluates the lighting equation for point lights.
-//---------------------------------------------------------------------------------------
+// 评估点光源的照明方程。
+
 float3 ComputePointLight(Light L, Material mat, float3 pos, float3 normal, float3 toEye)
 {
     // The vector from the surface to the light.
@@ -98,9 +94,7 @@ float3 ComputePointLight(Light L, Material mat, float3 pos, float3 normal, float
     return BlinnPhong(lightStrength, lightVec, normal, toEye, mat);
 }
 
-//---------------------------------------------------------------------------------------
-// Evaluates the lighting equation for spot lights.
-//---------------------------------------------------------------------------------------
+
 float3 ComputeSpotLight(Light L, Material mat, float3 pos, float3 normal, float3 toEye)
 {
     // The vector from the surface to the light.
