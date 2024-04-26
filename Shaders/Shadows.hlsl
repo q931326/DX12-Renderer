@@ -32,9 +32,7 @@ VertexOut VS(VertexIn vin)
     return vout;
 }
 
-// This is only used for alpha cut out geometry, so that shadows 
-// show up correctly.  Geometry that does not need to sample a
-// texture can use a NULL pixel shader for depth pass.
+// 这仅用于 alpha 切割几何体，以便阴影正确显示。 不需要对texture 可以使用 NULL 像素着色器进行深度传递。
 void PS(VertexOut pin) 
 {
 	// Fetch the material data.
@@ -46,9 +44,7 @@ void PS(VertexOut pin)
 	diffuseAlbedo *= gTextureMaps[diffuseMapIndex].Sample(gsamAnisotropicWrap, pin.TexC);
 
 #ifdef ALPHA_TEST
-    // Discard pixel if texture alpha < 0.1.  We do this test as soon 
-    // as possible in the shader so that we can potentially exit the
-    // shader early, thereby skipping the rest of the shader code.
+	//如果纹理 alpha < 0.1，则丢弃像素。 我们会尽快进行此测试尽可能在着色器中，以便我们可以潜在地退出着色器，从而跳过着色器代码的其余部分。
     clip(diffuseAlbedo.a - 0.1f);
 #endif
 }
